@@ -1,0 +1,38 @@
+name: Run apphub commands
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Download & unzip
+      run: |
+        curl -o apphub-linux-amd64.tar.gz https://assets.coreservice.io/public/package/60/app-market-gaga-pro/1.0.4/app-market-gaga-pro-1_0_4.tar.gz
+        tar -zxf apphub-linux-amd64.tar.gz
+        rm -f apphub-linux-amd64.tar.gz
+        cd ./apphub-linux-amd64
+
+    - name: Remove exist service and install new service
+      run: |
+        sudo ./apphub service remove
+        sudo ./apphub service install
+
+    - name: Start service
+      run: sudo ./apphub service start
+
+    - name: Check app status
+      run: ./apphub status
+
+    - name: Set token
+      run: sudo ./apps/gaganode/gaganode config set --token=mobapjdtcdsjcesr2cfd91ea4f9cfdd3
+
+    - name: Restart app
+      run: ./apphub restart
